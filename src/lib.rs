@@ -130,6 +130,10 @@ where
         self.inner.exact_match(&ip.nibbles().as_ref(), masklen)
     }
 
+    pub fn exact_match_mut(&mut self, ip: A, masklen: u32) -> Option<&mut T> {
+        self.inner.exact_match_mut(&ip.nibbles().as_ref(), masklen)
+    }
+
     /// Perform longest match lookup of `ip` and return the best matching
     /// prefix, designated by ip, masklen, along with its value.
     ///
@@ -157,6 +161,13 @@ where
     /// ```
     pub fn longest_match(&self, ip: A) -> Option<(A, u32, &T)> {
         match self.inner.longest_match(&ip.nibbles().as_ref()) {
+            Some((bits_matched, value)) => Some((ip.mask(bits_matched), bits_matched, value)),
+            None => None,
+        }
+    }
+
+    pub fn longest_match_mut(&mut self, ip: A) -> Option<(A, u32, &mut T)> {
+        match self.inner.longest_match_mut(&ip.nibbles().as_ref()) {
             Some((bits_matched, value)) => Some((ip.mask(bits_matched), bits_matched, value)),
             None => None,
         }
